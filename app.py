@@ -11,7 +11,7 @@ import pandas as pd
 import plotly.express as px
 
 
-Import config 
+import config 
 
 
 #Setup Mapbox Token
@@ -36,7 +36,17 @@ for k in range(len(jdata['features'])):
 # Year: 2021 - INE 
 # Year 2018 - 2020 Dummy Data 
 
-df= pd.read_csv("lxmed_animation_new.csv")
+df= pd.read_csv("ine_lx_2016_2021_quarters.csv")
+
+# Assign variable to columns for melt 
+dates = df.columns[3:]
+
+# Transform DF to long format 
+df1 = pd.melt(df, id_vars = ['ID','NOME'],
+                      value_vars=dates,     
+                      var_name='DATA',
+                      value_name='PRICE'
+                      )
 
 
 # Mapdesign - Where the magic happens 
@@ -48,22 +58,26 @@ df= pd.read_csv("lxmed_animation_new.csv")
 # "id" is the featurekey by default. If your common column name is different change accordingly
 
 
-fig = px.choropleth_mapbox(df, geojson=jdata, locations='ID', color='PRICE',            # color is based on the df dataframe "PRICE"
-                           color_continuous_scale="Inferno_r",                          # Choose a continuous color scale. "_r" reverses the color scale. 
-                           range_color=(2000, 8000),                                    # Set a scale range so that is fixed and doesn't change at every step of the animation
-                           animation_frame='ANO',                                       # Set an animation frame based on our dataframe column "ANO" (means "YEAR" in Portuguese) 
-                           mapbox_style="carto-positron",                               # Set mapbox map style 
-                           zoom=12.07, center = {"lat": 38.743646, "lon": -9.160204},   # You can get these values by going to Mapbox Chart Studio, setting your view, and then click on "Settings"
-                           opacity=1,                                                   # The opacity you want to use. This depends on what your final objective is. 
-                           labels={'PRICE':'Preço por m2','NOME':'Freguesia'}           # Set hover labels
+fig = px.choropleth_mapbox(df1, geojson=jdata, locations='ID', color='PRICE',              # color is based on the df dataframe "PRICE"
+                           color_continuous_scale="Viridis_r",                            # Choose a continuous color scale. "_r" reverses the color scale. 
+                           range_color=(650, 6000),                                       # Set a scale range so that is fixed and doesn't change at every step of the animation
+                           animation_frame='DATA',                                        # Set an animation frame based on our dataframe column "ANO" (means "YEAR" in Portuguese) 
+                           mapbox_style="carto-positron",                                 # Set mapbox map style 
+                           zoom=12.07, center = {"lat": 38.743646, "lon": -9.160204},     # You can get these values by going to Mapbox Chart Studio, setting your view, and then click on "Settings"
+                           opacity=1,                                                     # The opacity you want to use. This depends on what your final objective is. 
+                           labels={'PRICE':'Preço por m2','NOME':'Freguesia'},            # Set Hover Labels
+
                           )
 
 
-fig.update_layout(margin={"r":50,"t":50,"l":50,"b":50},                                 # Set Margins and Mapbox style. You can create your on Mapbox Chart Studio. 
+fig.update_layout(margin={"r":50,"t":100,"l":50,"b":50}, showlegend=True,                                # Set Margins and Mapbox style. You can create your on Mapbox Chart Studio. 
                   mapbox_style="mapbox://styles/vostpt/ckofpf18i1fdb17phhv9tkqkm"
                   )
 
 fig.update_mapboxes(bearing=-34.40, pitch=60.50)                                        # You can get these values by going to Mapbox Chart Studio, setting your view, and then click on "Settings"
+
+fig.update_layout(title_text="Preço Médio M2 em Lisboa",
+                  title_font_size=30)
 
 
 
