@@ -18,7 +18,7 @@ This https://lisbonsq.herokuapp.com/
 This script is an experiment, and future base, for animated geojson polygons. 
 It makes use of Lisbon's parrishes geojson files made available by the City of Lisbon and public data from the National Statistics Institute of Portugal regarding the price per sq/m for each parrish. 
 
-**The data used for 2021 is real. The data used for the previous years was generated randomly just to test the animation.**
+## NOW USING REAL DATA 
 
 
 # Data Sources
